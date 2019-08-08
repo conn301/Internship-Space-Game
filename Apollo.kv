@@ -1,0 +1,242 @@
+#: kivy 1.11.0
+
+ScreenManagement:
+
+    # LogIn:
+    # Register:
+    GameMenu:
+    SpaceArena:
+    YouLose:
+
+<LogIn>:
+    name: "login"
+    on_isAuthenticated: if root.isAuthenticated: app.root.current = "game"
+    on_isError: if root.isError:  errorlabel.text = "Username does not exist! Please try again."
+    on_isWrong: if root.isWrong: wrongpass.text = "Incorrect Password!"
+
+
+    canvas:
+        Rectangle:
+            size: root.center_x * 2, root.center_y * 2
+            pos: 0, 0
+            source: 'sunrise.jpg'
+
+    Label:
+        id: errorlabel
+        hint_text_color: [7,.5,.3,.6]
+        pos: 60, 80
+
+    Label:
+        id: wrongpass
+        pos: 60, 100
+
+    Button:
+        text: "Register"
+        size_hint: .2, .1
+        on_release: app.root.current = "register"
+
+    TextInput:
+        id: username
+        hint_text: "Username"
+        hint_text_color: [7,.5,.3,.6]
+        size_hint: .3, .07
+        pos: root.center_x - 50, 200
+        write_tab: False
+        multiline: False
+
+    TextInput:
+        id: password
+        password: True
+        hint_text: "Password"
+        size_hint: .3, .07
+        pos: root.center_x - 50, 100
+        write_tab: False
+        multiline: False
+
+
+    Button:
+        text: "Enter Apollo"
+        pos: root.center_x - 50, 10
+        size_hint: .3, .05
+        # on_release: root.connect_to_DB(username.text, password.text)
+
+
+<Register>:
+    name: "register"
+    canvas:
+        Rectangle:
+            size: root.center_x * 2, root.center_y * 2
+            pos: 0, 0
+            source: 'sunrise.jpg'
+    Label:
+        text: "Registration"
+        font_size: 40
+        pos: 200, 300
+
+    #Click tab after each entry  into TextInput to move to the next TextInput quickly
+    TextInput:
+        id: register_firstname
+        hint_text: "First Name"
+        size_hint: .3, .05
+        pos: root.center_x - 50, 300
+        write_tab: False
+
+    TextInput:
+        id: register_lastname
+        hint_text: "Last Name"
+        write_tab: False
+        size_hint: .3, .05
+        pos: root.center_x - 50, 250
+
+    TextInput:
+        id: register_username
+        hint_text: "Username"
+        write_tab: False
+        size_hint: .3, .05
+        pos: root.center_x - 50, 200
+
+
+    TextInput:
+        id: register_password
+        password: True
+        write_tab: False
+        hint_text: "Password"
+        size_hint: .3, .05
+        pos: root.center_x - 50, 150
+
+    Button:
+        text: "Register"
+        size_hint: .2, .1
+        pos: root.center_x, 50
+        on_press: root.user_account(register_firstname.text, register_lastname.text, register_username.text, register_password.text)
+        on_release: app.root.current = "login"
+
+
+<GameMenu>:
+    name: "game"
+
+    Button:
+        text:"Play Game"
+        size_hint: .3, .1
+        pos: 50, 50
+        on_press: app.root.current = "space"
+        on_release: self.games()
+
+    Label:
+        text: "Game Under Development..."
+        pos: 70, 80
+
+<SpaceArena>:
+    play: play
+    name: "space"
+    ship: ship_1
+    # wall: wall
+    bonus_1: bonus1
+
+    canvas:
+        Rectangle:
+            size: root.center_x * 2, root.center_y * 2
+            pos: 0, 0
+            source: 'space2.jpg'
+    # Wall:
+        # id: wall
+        # pos: 800, 800
+    Label:
+        font_size: 30
+        pos: -600, root.center_y - 50
+        text: "fuel: "
+    Label:
+        font_size: 30
+        pos: -380, root.center_y - 50
+        text: str(root.ship.fuel)
+    Button:
+        size_hint: .018, .03
+        pos: root.center_x * 2  - 30, root.center_y * 2 - 30
+        text: "X"
+        on_press: root.quit()
+    Button:
+        id: play
+        size_hint: .1, .1
+        pos: 200, 200
+        text: "Play Game"
+        on_press: root.games()
+    Bonus:
+        id: bonus1
+        pos: 500, 300
+    # Bonus:
+        # pos: 500, 400
+    Ship:
+        id: ship_1
+        canvas.before:
+            PushMatrix
+            Rotate:
+                angle: 48
+                origin: self.center
+        canvas.after:
+            PopMatrix
+
+
+
+<YouLose>:
+    canvas:
+        Rectangle:
+            size: 3000, 3000
+            pos: 0, 0
+
+
+<Ship>:
+    size_hint: .01, .02
+    canvas:
+        Color:
+            rgba: .7, .7, .7, 1
+        Line:
+            points: (self.x+5, self.y+21, self.x+10, self.y+26, self.x+15, self.y+21)
+            close: True
+            joint: 'miter'
+            cap: 'square'
+            width: 2.3
+        Color:
+            rgba: .8, .8, .8, 1
+        Line:
+            points: (self.x+5, self.y-6, self.x+10, self.y + 5, self.x+15, self.y-6)
+            close: True
+            joint: 'miter'
+            cap: 'square'
+            width: 3.
+        Rectangle:
+            size: 20, 6
+            pos: self.x, self.y - 15
+        Color:
+            rgba: .5, .5, .5, 1
+        Rectangle:
+            pos: self.pos
+            size: 20, 20
+
+
+
+<Bonus>:
+    size_hint: .04, .04
+    canvas:
+        Color:
+            rgba: .2, .1, .1, 1
+        # Rectangle:
+            # size_hint: .2, .2
+            # pos: self.pos
+        Line:
+            ellipse: (self.x, self.y, 40, 40)
+            width: 20
+        # Color:
+            # rgba: .15, .08, .07, 1
+    Label:
+        font_size: 16
+        pos: root.x - 30, root.y - 30
+        text: "refuel"
+
+
+<Wall>:
+    canvas:
+        Color:
+            rgba: .8, .8, .8, 1
+        Rectangle:
+            size: 10, 500
+            pos: self.x, self.y
