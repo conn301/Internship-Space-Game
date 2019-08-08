@@ -1,0 +1,122 @@
+ScreenManagement:
+    LogIn:
+    Register:
+    GameMenu:
+    #SpaceArena:
+    #Ship:
+
+<LogIn>:
+    name: "login"
+    on_isAuthenticated: if root.isAuthenticated: app.root.current = "game"
+    on_isError: if root.isError:  errorlabel.text = "Username does not exist! Please try again."
+    on_isWrong: if root.isWrong: wrongpass.text = "Incorrect Password!"
+
+
+    canvas:
+        Rectangle:
+            size: root.center_x * 2, root.center_y * 2
+            pos: 0, 0
+            source: 'sunrise.jpg'
+
+    Label:
+        id: errorlabel
+        hint_text_color: [7,.5,.3,.6]
+        pos: 60, 80
+
+    Label:
+        id: wrongpass
+        pos: 60, 100
+
+    Button:
+        text: "Register"
+        size_hint: .2, .1
+        on_release: app.root.current = "register"
+
+    TextInput:
+        id: username
+        hint_text: "Username"
+        hint_text_color: [7,.5,.3,.6]
+        size_hint: .3, .07
+        pos: root.center_x - 50, 200
+        write_tab: False
+        multiline: False
+
+    TextInput:
+        id: password
+        password: True
+        hint_text: "Password"
+        size_hint: .3, .07
+        pos: root.center_x - 50, 100
+        write_tab: False
+        multiline: False
+
+
+    Button:
+        text: "Enter Apollo"
+        pos: root.center_x - 50, 10
+        size_hint: .3, .05
+        on_release: root.connect_to_DB(username.text, password.text)
+
+<Register>:
+    name: "register"
+    canvas:
+        Rectangle:
+            size: root.center_x * 2, root.center_y * 2
+            pos: 0, 0
+            source: 'sunrise.jpg'
+    Label:
+        text: "Registration"
+        font_size: 40
+        pos: 200, 300
+
+    #Click tab after each entry  into TextInput to move to the next TextInput quickly
+    TextInput:
+        id: register_firstname
+        hint_text: "First Name"
+        size_hint: .3, .05
+        pos: root.center_x - 50, 300
+        write_tab: False
+
+    TextInput:
+        id: register_lastname
+        hint_text: "Last Name"
+        write_tab: False
+        size_hint: .3, .05
+        pos: root.center_x - 50, 250
+
+    TextInput:
+        id: register_username
+        hint_text: "Username"
+        write_tab: False
+        size_hint: .3, .05
+        pos: root.center_x - 50, 200
+
+
+    TextInput:
+        id: register_password
+        password: True
+        write_tab: False
+        hint_text: "Password"
+        size_hint: .3, .05
+        pos: root.center_x - 50, 150
+
+    Button:
+        text: "Register"
+        size_hint: .2, .1
+        pos: root.center_x, 50
+        on_press: root.user_account(register_firstname.text, register_lastname.text, register_username.text, register_password.text)
+        on_release: app.root.current = "login"
+
+
+<GameMenu>:
+    name: "game"
+
+    Button:
+        text:"Play Game"
+        size_hint: .3, .1
+        pos: 50, 50
+        # on_release: app.root.current = "space"
+
+    Label:
+        text: "Game Under Development..."
+        pos: 70, 80
