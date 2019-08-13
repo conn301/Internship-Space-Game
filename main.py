@@ -7,7 +7,11 @@ from kivy.core.window import Window
 from kivy.properties import NumericProperty, BooleanProperty, ReferenceListProperty, ObjectProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
+from kivy.graphics.context_instructions import PopMatrix, PushMatrix
+from kivy.graphics import Rotate
+from kivy.uix.behaviors import ButtonBehavior
 import math
+import time
 # import mysql.connecter
 
 kivy.require('1.11.0')
@@ -54,8 +58,8 @@ class Database():
             self.isError = True
             print("ERROR")
 
-        #connection.close()
-        # print("You connected to the database successfully.")
+        connection.close()
+        print("You connected to the database successfully.")
 
     def user_account(self, first, last, username, password):
 
@@ -80,14 +84,32 @@ class GameMenu(Screen, Database):
     pass
 
 
+class YouLose(Screen):
+
+    is_replay = BooleanProperty(False)
+
+    def replay(self):
+        is_replay = True
+        is_replay = False
+        # SpaceArena.replay(self)
+
+    def quit(self):
+        exit(1)
+
+
 # ===================== DATABASE ======================#
+
+
 class SpaceArena(Screen):
     ship = ObjectProperty(None)
     bonus_1 = ObjectProperty(None)
-    # wall = ObjectProperty(None)
+
+    is_lose = BooleanProperty(False)
 
     def setup(self):
         self.ship.fuel = 15
+        self.ship.velocity = 0, 0
+        self.ship.position = 0, 0
 
     def update(self, dt):
         self.ship.move()
@@ -95,6 +117,14 @@ class SpaceArena(Screen):
 
         if self.ship.collide_widget(self.bonus_1):
             self.ship.fuel = 15
+        # if self.ship.collide_widget(self.wall or self.wall2 or self.wall3) or :
+        if self.ship.collide_widget(self.wall) or self.ship.collide_widget(self.wall2) or self.ship.collide_widget(self.wall3):
+            self.ship.fuel = 0
+            self.ship.velocity = 0, 0
+            self.is_lose = True
+            self.is_lose = False
+            # ScreenManager.current = "YouLose"
+            # ScreenManager().next()
 
     def on_touch_up(self, touch):
         # if (touch.x)
@@ -121,20 +151,23 @@ class SpaceArena(Screen):
         exit(1)
 
     def games(self):
-        # game = SpaceArena()
         self.remove_widget(self.play)
         print("test2")
-        self.setup()
+
         Clock.schedule_interval(self.update, 1.0 / 60.0)
+        self.setup()
         return self
 
+    def replay(self):
+        is_lose = False
+        print("replay")
+        self.setup()
+        Clock.schedule_interval(self.update, 1.0 / 60.0)
 
-class YouLose(Screen):
-    def quit(self):
-        exit(1)
+
+
 
 # ===================== APP ======================#
-
 
 class ApolloApp(App):
     pass
@@ -142,11 +175,23 @@ class ApolloApp(App):
 # ====================== WIDGETS ========================#
 
 
-class Ship(Widget):
+class Ship(ButtonBehavior, Widget):
     fuel = NumericProperty(0)
     vel_x = NumericProperty(0)
     vel_y = NumericProperty(0)
     velocity = ReferenceListProperty(vel_x, vel_y)
+
+    # def __init__(self, angle=180, **kwargs):
+    #     super(Ship, self).__init__(**kwargs)
+    #
+    #     self.rotate = Rotate(angle=angle)
+    #
+    #     self.canvas.before.add(PushMatrix())
+    #     self.canvas.before.add(self.rotate)
+    #     self.canvas.after.add(PopMatrix())
+
+        # self.bind(pos=self.update_canvas)
+        # self.bind(size=self.update_canvas)
 
     def move(self):
         self.pos = Vector(*self.velocity) + self.pos
@@ -166,7 +211,7 @@ class Wall(Widget):
 
 
 class ScreenManagement(ScreenManager):
-    pass
+    sm = ScreenManager()
 
 
 presentation = Builder.load_file("Apollo.kv")

@@ -2,7 +2,7 @@
 
 ScreenManagement:
 
-    # LogIn:
+    LogIn:
     # Register:
     GameMenu:
     SpaceArena:
@@ -58,6 +58,7 @@ ScreenManagement:
         text: "Enter Apollo"
         pos: root.center_x - 50, 10
         size_hint: .3, .05
+        on_press: app.root.current = "game"
         # on_release: root.connect_to_DB(username.text, password.text)
 
 
@@ -130,8 +131,12 @@ ScreenManagement:
     play: play
     name: "space"
     ship: ship_1
-    # wall: wall
+    wall: wall
+    wall2: wall2
+    wall3: wall3
     bonus_1: bonus1
+
+    on_is_lose: if root.is_lose: app.root.current = "YouLose"
 
     canvas:
         Rectangle:
@@ -157,9 +162,9 @@ ScreenManagement:
     Button:
         id: play
         size_hint: .1, .1
-        pos: 200, 200
+        pos: root.center_x, root.center_y
         text: "Play Game"
-        on_press: root.games()
+        on_release: root.games()
     Bonus:
         id: bonus1
         pos: 500, 300
@@ -170,18 +175,52 @@ ScreenManagement:
         canvas.before:
             PushMatrix
             Rotate:
-                angle: 48
+                angle: 0
                 origin: self.center
         canvas.after:
             PopMatrix
+    Wall:
+        id: wall
+        pos: 800, 300
+    Wall:
+        id: wall2
+        pos: 1000, 600
+    Wall:
+        id: wall3
+        pos: 1400, 0
 
 
 
 <YouLose>:
+    name: "YouLose"
+
+    on_is_replay: if root.is_replay: app.root.current = "SpaceArena"
+
     canvas:
         Rectangle:
             size: 3000, 3000
             pos: 0, 0
+        Color:
+            rgba: .6, .3, .8, 1
+        Rectangle:
+            size: 200, 100
+            pos: 300, 200
+    Button:
+        size_hint: .018, .03
+        pos: root.center_x * 2  - 30, root.center_y * 2 - 30
+        text: "X"
+        on_press: root.quit()
+    Button:
+        size_hint: .1, .1
+        pos: root.center_x, root.center_y
+        text: "Quit Game"
+        on_press: root.quit()
+    Button:
+        size_hint: .1, .1
+        pos: root.center_x, root.center_y - 300
+        text: "Replay"
+        on_press: app.root.current = "login"
+        on_release: root.replay()
 
 
 <Ship>:
@@ -234,6 +273,7 @@ ScreenManagement:
 
 
 <Wall>:
+    size_hint: .005, .5
     canvas:
         Color:
             rgba: .8, .8, .8, 1
