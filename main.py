@@ -20,6 +20,7 @@ kivy.require('1.11.0')
 # ===================== CONFIG =======================#
 
 Window.fullscreen = True
+score = 0
 
 # ===================== SCREENS ======================#
 
@@ -87,6 +88,7 @@ class GameMenu(Screen, Database):
 class YouLose(Screen):
 
     is_replay = BooleanProperty(False)
+    is_score = BooleanProperty(False)
 
     def replay(self):
         is_replay = True
@@ -97,19 +99,48 @@ class YouLose(Screen):
         exit(1)
 
 
+class YouWin(Screen):
+    global score
+    is_score = BooleanProperty(False)
+    test = NumericProperty(0)
+    test = score
+    print("test:")
+    print(score)
+
+    def seescore(self):
+        is_score = True
+        self.is_score = True
+
+    def quit(self):
+        exit(1)
+
+
 # ===================== DATABASE ======================#
 
 
 class SpaceArena(Screen):
+    global score
+    global replay
     ship = ObjectProperty(None)
     bonus_1 = ObjectProperty(None)
 
     is_lose = BooleanProperty(False)
+    is_win = BooleanProperty(False)
+    myscore = NumericProperty(0)
 
     def setup(self):
         self.ship.fuel = 15
         self.ship.velocity = 0, 0
         self.ship.position = 0, 0
+
+    def loss(self):
+        pass
+        # is_lose = True
+
+    def win(self):
+        pass
+        # is_lose = False
+
 
     def update(self, dt):
         self.ship.move()
@@ -121,10 +152,24 @@ class SpaceArena(Screen):
         if self.ship.collide_widget(self.wall) or self.ship.collide_widget(self.wall2) or self.ship.collide_widget(self.wall3):
             self.ship.fuel = 0
             self.ship.velocity = 0, 0
+            # event = Clock.schedule_once(self.loss(), 0)
+            # Clock.unschedule(self.loss())
             self.is_lose = True
             self.is_lose = False
             # ScreenManager.current = "YouLose"
             # ScreenManager().next()
+
+        if self.ship.collide_widget(self.portal):
+            self.ship.velocity = 0, 0
+            score = self.ship.fuel
+            myscore = self.ship.fuel
+            print("This is the score:")
+            print(score)
+            print(myscore)
+            # YouWin.
+            self.is_win = True
+
+
 
     def on_touch_up(self, touch):
         # if (touch.x)
@@ -142,10 +187,11 @@ class SpaceArena(Screen):
             print(theta)
             print(self.ship.angle)
 
-            self.ship.fuel -= ((touch.x-self.ship.x)**2 + (touch.x-self.ship.x)**2)**(1/2) / 400
+            self.ship.fuel -= ((touch.x-self.ship.x)**2 + (touch.y-self.ship.y)**2)**(1/2) / 400
 
         if self.ship.fuel < 0:
             self.ship.fuel = 0
+
 
     def quit(self):
         exit(1)
@@ -170,7 +216,7 @@ class SpaceArena(Screen):
 # ===================== APP ======================#
 
 class ApolloApp(App):
-    pass
+    replay = True
 
 # ====================== WIDGETS ========================#
 
@@ -180,6 +226,7 @@ class Ship(ButtonBehavior, Widget):
     vel_x = NumericProperty(0)
     vel_y = NumericProperty(0)
     velocity = ReferenceListProperty(vel_x, vel_y)
+
 
     # def __init__(self, angle=180, **kwargs):
     #     super(Ship, self).__init__(**kwargs)
@@ -206,6 +253,9 @@ class Bonus(Widget):
 class Wall(Widget):
     pass
 
+
+class Objective(Widget):
+    pass
 
 # ====================== BUILD =======================#
 
