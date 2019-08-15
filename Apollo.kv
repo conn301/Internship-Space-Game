@@ -7,6 +7,7 @@ ScreenManagement:
     GameMenu:
     SpaceArena:
     YouLose:
+    YouWin:
 
 <LogIn>:
     name: "login"
@@ -121,7 +122,7 @@ ScreenManagement:
         size_hint: .3, .1
         pos: 50, 50
         on_press: app.root.current = "space"
-        on_release: self.games()
+        # on_release: self.games()
 
     Label:
         text: "Game Under Development..."
@@ -135,8 +136,10 @@ ScreenManagement:
     wall2: wall2
     wall3: wall3
     bonus_1: bonus1
+    portal: portal
 
-    on_is_lose: if root.is_lose: app.root.current = "YouLose"
+    # on_is_lose: if root.is_lose: app.root.current = "YouLose"
+    on_is_win: if root.is_win: gunk.text = "Score: " + str(round(root.ship.fuel / 15 * 100, 3)) + " %"
 
     canvas:
         Rectangle:
@@ -154,6 +157,10 @@ ScreenManagement:
         font_size: 30
         pos: -380, root.center_y - 50
         text: str(root.ship.fuel)
+    Label:
+        id: gunk
+        font_size: 50
+        pos: 300, 500
     Button:
         size_hint: .018, .03
         pos: root.center_x * 2  - 30, root.center_y * 2 - 30
@@ -188,13 +195,16 @@ ScreenManagement:
     Wall:
         id: wall3
         pos: 1400, 0
+    Objective:
+        id: portal
+        pos: 1200, 100
 
 
 
 <YouLose>:
     name: "YouLose"
 
-    on_is_replay: if root.is_replay: app.root.current = "SpaceArena"
+    # on_is_replay: if root.is_replay: app.root.current = "SpaceArena" and root.win()
 
     canvas:
         Rectangle:
@@ -221,6 +231,50 @@ ScreenManagement:
         text: "Replay"
         on_press: app.root.current = "login"
         on_release: root.replay()
+
+
+<YouWin>:
+    name: "YouWin"
+
+    # on_is_replay: if root.is_replay: app.root.current = "SpaceArena"
+    on_is_score: if root.is_score: scoreid.text = str(root.manager.get_screen('space').myscore)
+
+    canvas:
+        Color:
+            rgba: .2, .2, .2, 1
+        Rectangle:
+            size: 3000, 3000
+            pos: 0, 0
+        Color:
+            rgba: .6, .3, .8, 1
+        Rectangle:
+            size: 200, 100
+            pos: 300, 200
+    Button:
+        size_hint: .018, .03
+        pos: root.center_x * 2  - 30, root.center_y * 2 - 30
+        text: "X"
+        on_press: root.quit()
+    Button:
+        size_hint: .1, .1
+        pos: root.center_x, root.center_y
+        text: "See SCore"
+        on_press: root.seescore()
+    Label:
+        pos: root.center_x / 2, root.center_y / 2
+        text: "You win! Score:"
+    Label:
+        id: scoreid
+        pos: root.center_x / 2 + 90, root.center_y / 2
+    Label:
+        text: "%"
+        pos: root.center_x / 2 + 120, root.center_y / 2
+    # Button:
+        # size_hint: .1, .1
+        # pos: root.center_x, root.center_y - 300
+        # text: "Replay"
+        # on_press: app.root.current = "login"
+        # on_release: root.replay()
 
 
 <Ship>:
@@ -280,3 +334,22 @@ ScreenManagement:
         Rectangle:
             size: 10, 500
             pos: self.x, self.y
+
+
+<Objective>:
+    size_hint: .05, .05
+    canvas:
+        Color:
+            rgba: .4, .8, .3, 1
+        # Rectangle:
+            # size_hint: .2, .2
+            # pos: self.pos
+        Line:
+            ellipse: (self.x, self.y, 40, 40)
+            width: 20
+        # Color:
+            # rgba: .15, .08, .07, 1
+    Label:
+        font_size: 16
+        pos: root.x - 30, root.y - 30
+        text: "Portal"
